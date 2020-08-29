@@ -4,5 +4,5 @@
     // Incluir ficheiro do API
     require_once('slamapi.php');
 
-    $API = new SlamAPI($_REQUEST, false, $_CFG);
+    $API = new SlamAPI($_REQUEST, true, $_CFG);
 ?>
