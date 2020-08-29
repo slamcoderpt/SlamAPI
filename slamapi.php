@@ -6,6 +6,7 @@
         public $request;
         public $cfg;
         public $allClasses;
+        public $allDatasets;
 
         // Boolean
         public $showHtml = false;
@@ -64,12 +65,13 @@
         }
 
         /*
-         *  Esta função irá carregar todos os nomes dos modulos desenvolvidos
+         *  Esta função irá carregar todos os nomes dos modulos desenvolvidos incluindo datasets
          *  Servirá posteriormente para verificação de classes vindas do REQUEST
          */
         function load_classes()
         {
-            $this->allClasses = array_diff(scandir($this->cfg['CLASSES_DIR']), array('..', '.'));
+            $this->allClasses  = array_diff(scandir($this->cfg['CLASSES_DIR']), array('..', '.'));
+            $this->allDatasets = array_diff(scandir($this->cfg['DATASETS_DIR']), array('..', '.'));
         }
 
         /*
@@ -84,6 +86,7 @@
             $module = new $request['action']();
             $method = $request['method'];
             $module::$html = $html;
+
 
             echo $module->$method();
         }
@@ -127,6 +130,7 @@
 
             $fileRequested = $request['action'].$this->fileExtension;
             if(in_array($fileRequested, $this->allClasses)) include($this->cfg['CLASSES_DIR'].$fileRequested);
+            if(in_array($fileRequested, $this->allDatasets)) include($this->cfg['DATASETS_DIR'].$fileRequested);
 
             $request['method'] = $this->methodPrefix . $request['method'];
 

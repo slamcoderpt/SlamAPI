@@ -8,6 +8,7 @@
     $_CFG['JS_DIR']         = $_CFG['ASSETS_DIR'] . "js/";
     $_CFG['CSS_DIR']        = $_CFG['ASSETS_DIR'] . "css/";
     $_CFG['CLASSES_DIR']    = "classes/";
+    $_CFG['DATASETS_DIR']   = "datasets/";
 
     $_CFG['MYSQL_TYPE']         = "mysql";
     $_CFG['MYSQL_HOST']         = "localhost";
