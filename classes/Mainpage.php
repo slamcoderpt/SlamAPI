@@ -3,8 +3,8 @@
     {
         public static $html;
 
-        function action_index(){
-            display_text();
+        function action_index($dataset){
+            $dataset::display_text();
         }
     }
 ?>

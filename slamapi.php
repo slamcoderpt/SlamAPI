@@ -15,6 +15,7 @@
         public $defaultAction = "Mainpage";
         public $defaultMethod = "Index";
         public $methodPrefix  = "action_";
+        public $methodData    = "Data";
         public $fileExtension = ".php";
 
         // PDO Connection
@@ -75,23 +76,6 @@
         }
 
         /*
-         *  Fazer o carregamento do modulo
-         *  Selecionado através do request
-         */
-        function load_module(&$request, $html)
-        {
-
-            $this->load_headers($html);
-
-            $module = new $request['action']();
-            $method = $request['method'];
-            $module::$html = $html;
-
-
-            echo $module->$method();
-        }
-
-        /*
          * Colocar os headers indicados no início da página
          */
         function load_headers($html)
@@ -102,6 +86,25 @@
 
             if($html)  header("Content-Type: text/html; charset=UTF-8");
             if(!$html) header("Content-type: application/json; charset=utf-8");
+        }
+
+        /*
+         *  Fazer o carregamento do modulo e respetivo dataset
+         *  Selecionado através do request
+         */
+        function load_module(&$request, $html)
+        {
+
+            $this->load_headers($html);
+
+            $module         = new $request['action']();
+            $dataset        = $request['action'].$this->methodData;
+            $moduleData     = new $dataset();
+            $method         = $request['method'];
+            $module::$html  = $html;
+
+
+            echo $module->$method($moduleData);
         }
 
         /*
@@ -118,7 +121,7 @@
         /*
          *  Fazer a validação do request
          *  Faz o carregamento de todas as classes
-         *  Verificando se existe a classe e o respetivo metodo
+         *  Verificando se existe a classe , respetivo dataset e metodo de entrada
          *  Se a class ou o metodo forem vazio irá ser atribuido o index
          */ 
         function validate_request(&$request)
@@ -128,9 +131,11 @@
             if(empty($request['action'])) $request['action'] = $this->defaultAction;
             if(empty($request['method'])) $request['method'] = $this->defaultMethod;
 
-            $fileRequested = $request['action'].$this->fileExtension;
+            $fileRequested      = $request['action'].$this->fileExtension;
+            $datasetRequested   = $request['action'].$this->methodData.$this->fileExtension;
+
             if(in_array($fileRequested, $this->allClasses)) include($this->cfg['CLASSES_DIR'].$fileRequested);
-            if(in_array($fileRequested, $this->allDatasets)) include($this->cfg['DATASETS_DIR'].$fileRequested);
+            if(in_array($datasetRequested, $this->allDatasets)) include($this->cfg['DATASETS_DIR'].$datasetRequested);
 
             $request['method'] = $this->methodPrefix . $request['method'];
 
