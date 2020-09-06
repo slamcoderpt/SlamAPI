@@ -4,26 +4,19 @@
     {
         // Arrays
         public $request;
-        public $cfg;
         public $allClasses;
         public $allDatasets;
+        public static $cfg;
 
         // Boolean
         public static $SHOWHTML = false;
-
-        // String
-        public $defaultAction = "Mainpage";
-        public $defaultMethod = "Index";
-        public $loginAction   = "Login";
-        public $methodPrefix  = "action_";
-        public $methodData    = "Data";
-        public $fileExtension = ".php";
 
         // PDO Connection
         public static $MYSQL         = null;
         public static $PHC           = null;
 
-        // Session
+        // Request e Session
+        public $REQUEST              = null;
         public static $SESSION       = null;
 
         /*
@@ -36,14 +29,14 @@
         function __construct($request, $showHtml, $params)
         {
             $this->request  = $request;
-            $this->cfg      = $params;
+            self::$cfg      = $params;
             self::$SHOWHTML = $showHtml;
 
             self::$MYSQL    = $this->get_db_instance($params['MYSQL_TYPE'], $params['MYSQL_HOST'], $params['MYSQL_DBNAME'], $params['MYSQL_USERNAME'], $params['MYSQL_PASSWORD']);
             
             $validRequest   = $this->validate_request($this->request);
             
-            if($validRequest) $this->load_module($this->request, self::$SHOWHTML); else redirectTo($defaultAction, $defaultMethod);
+            if($validRequest) $this->load_module($this->request, self::$SHOWHTML); else redirectTo(self::$cfg['defaultAction'], self::$cfg['defaultMethod']);
 
             self::$MYSQL    = null;
         }
@@ -58,12 +51,15 @@
          */
         function get_db_instance($type, $host, $dbname, $username, $password)
         {
-            try {
+            try 
+            {
                 $conn = new PDO($type.":host=".$host.";dbname=".$dbname, $username, $password);
                 $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
                 return $conn;
-            } catch(PDOException $e) {
+            } 
+            catch(PDOException $e) 
+            {
                 return false;
             }
         }
@@ -74,8 +70,8 @@
          */
         function load_classes()
         {
-            $this->allClasses  = array_diff(scandir($this->cfg['CLASSES_DIR']), array('..', '.'));
-            $this->allDatasets = array_diff(scandir($this->cfg['DATASETS_DIR']), array('..', '.'));
+            $this->allClasses  = array_diff(scandir(self::$cfg['CLASSES_DIR']), array('..', '.'));
+            $this->allDatasets = array_diff(scandir(self::$cfg['DATASETS_DIR']), array('..', '.'));
         }
 
         /*
@@ -94,20 +90,22 @@
         /*
          *  Fazer o carregamento do modulo e respetivo dataset
          *  Selecionado através do request
+         *  Verifica também se a sesão está iniciada
          */
         function load_module(&$request, $html)
         {
             $this->load_headers($html);
 
             self::$SESSION        = new Session(self::$SHOWHTML);
+            $this->REQUEST        = new Request();
 
             $module         = new $request['action']();
-            $dataset        = $request['action'].$this->methodData;
+            $dataset        = $request['action'].self::$cfg['methodData'];
             $moduleData     = new $dataset();
             $method         = $request['method'];
             
-            if(!self::$SESSION->valid_session(self::$SHOWHTML) && $module::REQUIRE_LOGIN) redirectTo($this->loginAction);
-            echo $module->$method($moduleData);
+            if(!self::$SESSION->valid_session(self::$SHOWHTML) && $module::REQUIRE_LOGIN) redirectTo(self::$cfg['loginAction']);
+            echo $module->$method($moduleData, $this->REQUEST);
         }
 
         /*
@@ -115,22 +113,21 @@
          *  Faz o carregamento de todas as classes
          *  Verificando se existe a classe , respetivo dataset e metodo de entrada
          *  Se a class ou o metodo forem vazio irá ser atribuido o index
-         *  Verifica também se a sesão está iniciada
          */ 
         function validate_request(&$request)
         {
             $this->load_classes();
 
-            if(empty($request['action'])) $request['action'] = $this->defaultAction;
-            if(empty($request['method'])) $request['method'] = $this->defaultMethod;
+            if(empty($request['action'])) $request['action'] = self::$cfg['defaultAction'];
+            if(empty($request['method'])) $request['method'] = self::$cfg['defaultMethod'];
 
-            $fileRequested      = $request['action'].$this->fileExtension;
-            $datasetRequested   = $request['action'].$this->methodData.$this->fileExtension;
+            $fileRequested      = $request['action'].self::$cfg['fileExtension'];
+            $datasetRequested   = $request['action'].self::$cfg['methodData'].self::$cfg['fileExtension'];
 
-            if(in_array($fileRequested, $this->allClasses)) include($this->cfg['CLASSES_DIR'].$fileRequested);
-            if(in_array($datasetRequested, $this->allDatasets)) include($this->cfg['DATASETS_DIR'].$datasetRequested);
+            if(in_array($fileRequested, $this->allClasses)) include(self::$cfg['CLASSES_DIR'].$fileRequested);
+            if(in_array($datasetRequested, $this->allDatasets)) include(self::$cfg['DATASETS_DIR'].$datasetRequested);
 
-            $request['method'] = $this->methodPrefix . $request['method'];
+            $request['method'] = self::$cfg['methodPrefix'] . $request['method'];
 
             $classExist  = class_exists($request['action']);
             $methodExist = method_exists($request['action'], $request['method']);
