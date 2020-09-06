@@ -9,18 +9,22 @@
         public $allDatasets;
 
         // Boolean
-        public $showHtml = false;
+        public static $SHOWHTML = false;
 
         // String
         public $defaultAction = "Mainpage";
         public $defaultMethod = "Index";
+        public $loginAction   = "Login";
         public $methodPrefix  = "action_";
         public $methodData    = "Data";
         public $fileExtension = ".php";
 
         // PDO Connection
-        public $MYSQL         = null;
-        public $PHC           = null;
+        public static $MYSQL         = null;
+        public static $PHC           = null;
+
+        // Session
+        public static $SESSION       = null;
 
         /*
          * Inicialização da classe  
@@ -33,16 +37,15 @@
         {
             $this->request  = $request;
             $this->cfg      = $params;
-            $this->showHtml = $showHtml;
+            self::$SHOWHTML = $showHtml;
 
-            $this->MYSQL   = $this->get_db_instance($params['MYSQL_TYPE'], $params['MYSQL_HOST'], $params['MYSQL_DBNAME'], $params['MYSQL_USERNAME'], $params['MYSQL_PASSWORD']);
+            self::$MYSQL    = $this->get_db_instance($params['MYSQL_TYPE'], $params['MYSQL_HOST'], $params['MYSQL_DBNAME'], $params['MYSQL_USERNAME'], $params['MYSQL_PASSWORD']);
             
-            $validRequest  = $this->validate_request($this->request);
-            if(!$validRequest) $this->set_invalid_request($this->request);
+            $validRequest   = $this->validate_request($this->request);
             
-            $this->load_module($this->request, $this->showHtml);
+            if($validRequest) $this->load_module($this->request, self::$SHOWHTML); else redirectTo($defaultAction, $defaultMethod);
 
-            $this->MYSQL   = null;
+            self::$MYSQL    = null;
         }
 
         /*
@@ -94,28 +97,17 @@
          */
         function load_module(&$request, $html)
         {
-
             $this->load_headers($html);
+
+            self::$SESSION        = new Session(self::$SHOWHTML);
 
             $module         = new $request['action']();
             $dataset        = $request['action'].$this->methodData;
             $moduleData     = new $dataset();
             $method         = $request['method'];
-            $module::$html  = $html;
-
-
+            
+            if(!self::$SESSION->valid_session(self::$SHOWHTML) && $module::REQUIRE_LOGIN) redirectTo($this->loginAction);
             echo $module->$method($moduleData);
-        }
-
-        /*
-         * Invalidar o request ao colocar o action e o method 
-         * direcionados para a classe dos Errors. Assim irá ter uma
-         * página propria para representar os erros.
-         */
-        function set_invalid_request(&$request)
-        {
-            $request['action'] = "Errors";
-            $request['method'] = "invalid_request";
         }
 
         /*
@@ -123,6 +115,7 @@
          *  Faz o carregamento de todas as classes
          *  Verificando se existe a classe , respetivo dataset e metodo de entrada
          *  Se a class ou o metodo forem vazio irá ser atribuido o index
+         *  Verifica também se a sesão está iniciada
          */ 
         function validate_request(&$request)
         {

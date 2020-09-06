@@ -1,9 +1,10 @@
 <?php
     class Mainpage
     {
-        public static $html;
+        const REQUIRE_LOGIN = true;
 
-        function action_index($dataset){
+        function action_index($dataset)
+        {
             $dataset::display_text();
         }
     }
