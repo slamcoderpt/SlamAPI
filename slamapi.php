@@ -104,7 +104,9 @@
             $moduleData     = new $dataset();
             $method         = $request['method'];
             
-            if(!self::$SESSION->valid_session(self::$SHOWHTML) && $module::REQUIRE_LOGIN) redirectTo(self::$cfg['loginAction']);
+            if(!self::$SESSION->valid_session(self::$SHOWHTML) && $module::REQUIRE_LOGIN){
+                redirectTo(self::$cfg['loginAction']);
+            } 
             echo $module->$method($moduleData, $this->REQUEST);
         }
 

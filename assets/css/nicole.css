@@ -1,0 +1,22 @@
+.submenu
+{
+    margin-left: 12px;
+    list-style: none;
+}
+
+.sidebar .submenu p a:hover
+{
+    text-decoration: underline;
+}
+
+.login-card
+{
+    padding-top: 25vh;
+}
+
+.custom-footer
+{
+    position: absolute;
+    width:100%;
+    bottom:0px;
+}

@@ -12,8 +12,11 @@
     $_CFG['DATASETS_DIR']   = "datasets/";
     $_CFG['VIEW_DIR']       = "views/";
 
-    $_CFG['THEME_LOGGED']   = "nicole_theme/";
-    $_CFG['THEME_OUT']      = "nicole_full/";
+    $_CFG['app']            = "Nicole Xplore";
+
+    $_CFG['THEME']                  = "nicole/";
+    $_CFG['THEME_BASE_LOGGED']      = "Site/index.php";
+    $_CFG['THEME_BASE_LOGIN']       = "Site/login.php";
 
     $_CFG['defaultAction']  = "Mainpage";
     $_CFG['defaultMethod']  = "index";
@@ -27,6 +30,8 @@
     $_CFG['MYSQL_DBNAME']   = "_novanicole";
     $_CFG['MYSQL_USERNAME'] = "root";
     $_CFG['MYSQL_PASSWORD'] = "";
+
+    $_CFG['PASSWORD_SALT']  = '$5$rounds=5000$thisaltronix$';
 
     define("ROOT_URL" , "http://localhost/SlamAPI/");
 

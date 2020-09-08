@@ -3,9 +3,10 @@
     // Incluir ficheiro de Configurações
     require_once('cfg.php');
     // Funções gerais
-    require_once('globals/GlobalFunctions.php');
-    require_once('globals/Request.php');
-    require_once('globals/Session.php');
+    require_once('helpers/GlobalFunctions.php');
+    require_once('helpers/Html.php');
+    require_once('helpers/Request.php');
+    require_once('helpers/Session.php');
     // Interfaces
     require_once('interfaces/Authenticate.php');
     require_once('interfaces/Classes.php');
