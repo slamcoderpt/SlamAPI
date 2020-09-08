@@ -2,7 +2,7 @@
     class Login implements Classes, Authenticate
     {
         const REQUIRE_LOGIN = false;
-        const TITLE         = "Login";
+        const MODULE        = "Login";
 
         public $errors = [];
         
@@ -10,6 +10,8 @@
                         'f_utilizador' => 'string',
                         'f_password'   => 'string',   
                         ];
+
+                       
 
         function action_index($dataset, Request $req)
         {
@@ -36,7 +38,8 @@
             if(SlamAPI::$SESSION->logged) redirectTo('Mainpage');
 
             // Verifica se as credenciais são válidas
-            if(!has_errors($this->errors) && $dataset->valid_credentials($req->f_utilizador, $req->f_password)){
+            if(!has_errors($this->errors) && $dataset->valid_credentials($req->f_utilizador, $req->f_password))
+            {
                 // Obter o id do utilizador
                 $id = $dataset->get_user_id($req->f_utilizador);
 
@@ -52,8 +55,12 @@
             $this->errors['f_password']     = "Inválido";
 
             // Se chegou até aqui é porque existem erros
-            $model = ["title" => SlamAPI::$cfg['app'] . ' - ' .self::TITLE,
-                      "errors" => $this->errors];
+            $model = [
+                "title" => SlamAPI::$cfg['app'],
+                "moduleName" => self::MODULE,
+                "errors" => $this->errors,
+                "request" => $req
+            ];
 
             // Renderiza o módulo
             render($model, '', SlamAPI::$cfg['THEME_BASE_LOGIN']);

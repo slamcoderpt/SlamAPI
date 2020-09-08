@@ -2,10 +2,21 @@
     class Mainpage implements Classes
     {
         const REQUIRE_LOGIN = true;
+        const MODULE        = "Página Inicial";
+
+        public $errors = [];
+        
+        public $inputs = [];
 
         function action_index($dataset, Request $req)
         {
-            $dataset::display_text();
+            $model = [
+                "title" => SlamAPI::$cfg['app'],
+                "moduleName" => self::MODULE,
+            ];
+
+            // Renderiza o módulo
+            render($model, '', SlamAPI::$cfg['THEME_BASE_LOGGED']);
         }
 
         function action_delete($dataset, Request $req){}

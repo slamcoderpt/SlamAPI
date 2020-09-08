@@ -33,12 +33,12 @@
                                 <div class="col">
                                     <?= 
                                     Html::input($model, [
-                                        "type" => "text",
-                                        "class"=> "form-control",
-                                        "name"   => "f_utilizador",
+                                        "type"        => "text",
+                                        "class"       => "form-control",
+                                        "name"        => "f_utilizador",
                                         "placeholder" => "Utilizador",
-                                        "required" => "",
-                                        "error-control"=>true,
+                                        "required"        => "",
+                                        "error-control"   => true,
                                         "form-group-class"=>"form-group"
                                     ]);
                                     ?>

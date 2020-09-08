@@ -82,6 +82,16 @@
     {
         return $var ?: '';
     }
+
+    /*
+     * Verica se o array não está vazio
+     * Retorna true se não estiver vazio
+     * @erros = array de erros
+     */
+    function has_errors($errors)
+    {
+        return count($errors) > 0;
+    }
     
     /*
      * Função para redirecionar para outra página
@@ -107,11 +117,21 @@
             $model = new stdClass();
             array_to_object($tmpModel, $model);
             include(SlamAPI::$cfg['VIEW_DIR'] . SlamAPI::$cfg['THEME'] . $base);
+            $content = SlamAPI::$cfg['VIEW_DIR'] . SlamAPI::$cfg['THEME'] . $content . SlamAPI::$cfg['fileExtension'];
         }
         else
         {
             if($allowJSON) json_encode($model);
         }
+    }
+
+    /*
+     * Inclui o ficheiro de content do template se o mesmo existir
+     * @content = caminho do ficheiro content
+     */
+    function render_content($content)
+    {
+        if(file_exists($content)) include($content);
     }
 
     /*
@@ -129,16 +149,6 @@
             $typeFunction = data_type_function($dataType);
             if(!$typeFunction($request->$key)) $errors[$key] = true;
         }
-    }
-
-    /*
-     * Verica se o array não está vazio
-     * Retorna true se não estiver vazio
-     * @erros = array de erros
-     */
-    function has_errors($errors)
-    {
-        return count($errors) > 0;
     }
 
 ?>

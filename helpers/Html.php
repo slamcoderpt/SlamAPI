@@ -10,15 +10,15 @@
          */
         public static function form_init($params)
         {
-            $form  = '<form ';
-            $form .= array_to_element($params, ['type', 'action']);
+            $form   = '<form ';
+            $form  .= array_to_element($params, ['type', 'action']);
 
             $type   = !empty(get_var($params['type'])) ? get_var($params['type']) 
                                                        : self::FORM_DEFAULT_POST;
 
             $action = explode_to_element(get_var($params['action']), '/', ['action', 'method']);
                 
-            $form .= 'action="index.php?'.$action.'" method="'. $type . '" >';
+            $form  .= 'action="index.php?'.$action.'" method="'. $type . '" >';
 
             echo $form;
         }
@@ -86,17 +86,18 @@
             }
 
             //Criação do input
+            $inputName = get_var($params['name']);
+
             $input .= '<input ';
             $input .= array_to_element($params, ['error-control', 'form-group-class']);     
-            $input .= !empty(get_var($params['id'])) && isset($modelItem[$params['name']]) 
-                                            ? "value='".$modelItem[$params['name']]."'" 
+            $input .= !empty(get_var($params['name'])) && isset($modelItem->request->$inputName) 
+                                            ? "value='".$modelItem->request->$inputName."'" 
                                             : "value='".get_var($params['value'])."'";
             $input .= '>';
 
             $input .= '</div>';
 
-            //@TODO: Testar codigo em cima de pre preenchimento
-            //@TODO: Criar sistema de erros -> estético
+            //@TODO: Criar sistema de erros -> estético | em progresso
 
             if( get_var($params['return']) === true ) return $input; else echo $input;
 
